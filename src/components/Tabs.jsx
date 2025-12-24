@@ -1,5 +1,5 @@
 export function Tabs(props) {
-  const { todos, selectedTab, setSelectedTab } = props
+  const { todos, selectedTab, setSelectedTab, setPutInputAtTodoIndex} = props
 
   const tabs = ['All', 'Open', 'Completed']
   return (
@@ -14,6 +14,7 @@ export function Tabs(props) {
 
           return (
             <button onClick={() => {
+              setPutInputAtTodoIndex(null)
               setSelectedTab(tab)
             }} key={tabIndex} className={"tab-button " + (tab === selectedTab ? ' tab-selected': ' ')}>
               <h4>{tab} <span>({numOfTasks})</span></h4>

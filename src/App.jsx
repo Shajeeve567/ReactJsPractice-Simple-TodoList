@@ -18,9 +18,34 @@ function App() {
 
   const [selectedTab, setSelectedTab] = useState('Open')
 
+  const [editTab, setEditTab] = useState(false)
+  const [putInputAtTodoIndex, setPutInputAtTodoIndex] = useState(null)  // Tracks the currently being edited todo
 
   function handleAddTodo(newTodo) {
     const newTodoList = [...todos, {input: newTodo, complete: false}]
+    setTodos(newTodoList)
+    handleSaveData(newTodoList)
+  }
+
+  function handleEditTodo(index, updatedText) {
+    setPutInputAtTodoIndex(index)
+  }
+
+  function handleSaveEdit(index, updatedText) {
+    let newTodo = {input: updatedText, 'complete': false}
+    let newTodoList = [...todos]
+    newTodoList[index] = newTodo
+    setTodos(newTodoList)
+    setPutInputAtTodoIndex(null)
+    setSelectedTab('Open')
+    handleSaveData(newTodoList)
+  }
+
+  function handleDeleteTodo(index) {
+    let newTodoList = todos.filter((val, valIndex) => {
+      return valIndex !== index 
+    })
+    if (index === putInputAtTodoIndex) { setPutInputAtTodoIndex(null) }
     setTodos(newTodoList)
     handleSaveData(newTodoList)
   }
@@ -35,13 +60,6 @@ function App() {
     handleSaveData(newTodoList)
   }
 
-  function handleDeleteTodo(booltype, index) {
-    let newTodoList = todos.filter((val, valIndex) => {
-      return valIndex !== index 
-    })
-    setTodos(newTodoList)
-    handleSaveData(newTodoList)
-  }
 
   function handleSaveData(currTodos) {
     localStorage.setItem('todo-app', JSON.stringify({ todos: currTodos }))
@@ -52,16 +70,35 @@ function App() {
     let db = []
     db = JSON.parse(localStorage.getItem('todo-app'))
     setTodos(db.todos)
-
   }, [])
 
   return (
     <>
-
         <Header todos={todos} />
-        <Tabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} todos={todos} />
-        <TodoList handleCompleteTodo={handleCompleteTodo} handleDeleteTodo={handleDeleteTodo} selectedTab={selectedTab} todos={todos} />
-        <TodoInput handleAddTodo={handleAddTodo}/>
+
+        <Tabs 
+        setPutInputAtTodoIndex={setPutInputAtTodoIndex}
+        selectedTab={selectedTab} 
+        setSelectedTab={setSelectedTab} 
+        todos={todos} 
+        />
+
+        <TodoList
+        handleSaveEdit={handleSaveEdit}
+        putInputAtTodoIndex={putInputAtTodoIndex}
+        setPutInputAtTodoIndex={setPutInputAtTodoIndex}
+        setEditTab={setEditTab} 
+        editTab={editTab} 
+        handleEditTodo={handleEditTodo} 
+        handleCompleteTodo={handleCompleteTodo} 
+        handleDeleteTodo={handleDeleteTodo} 
+        selectedTab={selectedTab} 
+        todos={todos} 
+        />
+
+        <TodoInput 
+        handleAddTodo={handleAddTodo} 
+        />
 
     </>
   )
